@@ -12,31 +12,34 @@ import (
 )
 
 type InfluxDBConfig struct {
-	token  string `env:"INFLUXDB_TOKEN"`
-	url    string `env:"INFLUXDB_URL"`
-	org    string `env:"INFLUXDB_ORG"`
-	bucket string `env:"INFLUXDB_BUCKET"`
+	Token  string `env:"INFLUXDB_TOKEN"`
+	Url    string `env:"INFLUXDB_URL"`
+	Org    string `env:"INFLUXDB_ORG"`
+	Bucket string `env:"INFLUXDB_BUCKET"`
 }
 
 type DhtConfig struct {
-	pin   int `env:"DHT_PIN" envDefault:"4"`
-	retry int `env:"DHT_RETRY" envDefault:"10"`
+	Pin   int `env:"DHT_PIN" envDefault:"4"`
+	Retry int `env:"DHT_RETRY" envDefault:"10"`
 }
 
 type config struct {
-	influxdb InfluxDBConfig
-	dht      DhtConfig
+	Influxdb InfluxDBConfig
+	Dht      DhtConfig
 }
 
 func main() {
 
 	cfg, err := env.ParseAs[config]()
+	if err != nil {
+		log.Printf("%+v\n", err)
+	}
 
-	client := influxdb2.NewClient(cfg.influxdb.url, cfg.influxdb.token)
-	writeAPI := client.WriteAPIBlocking(cfg.influxdb.org, cfg.influxdb.bucket)
+	client := influxdb2.NewClient(cfg.Influxdb.Url, cfg.Influxdb.Token)
+	writeAPI := client.WriteAPIBlocking(cfg.Influxdb.Org, cfg.Influxdb.Bucket)
 
 	temperature, humidity, _, err :=
-		dht.ReadDHTxxWithRetry(dht.DHT22, 4, false, cfg.dht.retry)
+		dht.ReadDHTxxWithRetry(dht.DHT22, cfg.Dht.Pin, false, cfg.Dht.Retry)
 	if err != nil {
 		log.Fatal(err)
 	}
