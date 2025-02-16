@@ -36,7 +36,7 @@ func main() {
 	writeAPI := client.WriteAPIBlocking(cfg.influxdb.org, cfg.influxdb.bucket)
 
 	temperature, humidity, _, err :=
-		dht.ReadDHTxxWithRetry(dht.DHT22, cfg.dht.pin, false, cfg.dht.retry)
+		dht.ReadDHTxxWithRetry(dht.DHT22, 4, false, cfg.dht.retry)
 	if err != nil {
 		log.Fatal(err)
 	}
