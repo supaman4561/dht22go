@@ -2,9 +2,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - '**'
     tags:
-      - '**'
 
 env:
   HARBOR_URL: harbor.supaperman.net
@@ -34,16 +32,11 @@ jobs:
           username: ${{ secrets.HARBOR_ROBOT_USERNAME }}
           password: ${{ secrets.HARBOR_ROBOT_PASSWORD }}
 
-      - name: Create TAG
-        run: |
-          TAG=$(echo $GITHUB_REF | sed 's|refs/heads/||' | sed 's|refs/tags/||' )
-          echo "DOCKER_TAG=$TAG" >> $GITHUB_ENV
-
       - name: Build the Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.HARBOR_URL }}/${{ env.PROJECT_NAME }}/${{ env.IMAGE_NAME }}:${{ DOCKER_TAG }}
+          tags: ${{ env.HARBOR_URL }}/${{ env.PROJECT_NAME }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
           platforms: linux/arm64
